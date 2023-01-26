@@ -4,7 +4,7 @@ from Twitch import Twitch
 import time, concurrent.futures, json, re
 
 FILENAME = 'speech.wav'
-TWITCH_CHANNEL = 'bawkbasoup'
+TWITCH_CHANNEL = 'weiest_'
 MESSAGE_RATE = 0.5
 MAX_QUEUE_LENGTH = 20
 MAX_WORKERS = 100
