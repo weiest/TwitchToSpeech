@@ -11,6 +11,8 @@ There are 3 main modules each responsible to doing their thing.
 
 ## How to Use?
 ### Install
+First thing first, you need Python and you might want to learn how to use virtual enviorments. (Google it)
+
 This requires pyttsx3 and pygame (and their Prerequisite), more information can be found in `requirements.txt`
 ```
 pip install -r requirements.txt
