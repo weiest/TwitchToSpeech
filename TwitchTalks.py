@@ -3,8 +3,8 @@ from VoiceEngine import VoiceEngine
 from Twitch import Twitch
 import time, concurrent.futures, json, re
 
-TWITCH_CHANNEL = 'weiest_'
 FILENAME = 'speech.wav'
+TWITCH_CHANNEL = 'bawkbasoup'
 MESSAGE_RATE = 0.5
 MAX_QUEUE_LENGTH = 20
 MAX_WORKERS = 100
@@ -18,15 +18,23 @@ message_queue = []
 thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 active_tasks = []
 
+PROFANITY_LIST = json.load(open("filter.json", "r"))
+PROFANITY_REGEX = re.compile('|'.join(PROFANITY_LIST))
+
+def filter_message(message):
+    # Process message before playing it
+    output = PROFANITY_REGEX.sub("", str(message))
+    return output
+
 def handle_message(message):
-    username = message["username"]
-    message = message["message"]
-    thread_name = current_thread().name
-    filename = username+".wav"
-    print(f"Recieved a message from {username} to say {message} in {thread_name}")
+    user = message["username"]
+    time = message["time"]
+    msg = message["message"]
+    msg = filter_message(message)
+    print(f"[{time}] {user}: {msg}")
     try:
-        voice.generateSpeech(message, filename)
-        audio.playAudio(filename)
+        voice.generateSpeech(msg, FILENAME)
+        audio.playAudio(FILENAME)
     except:
         return
 
