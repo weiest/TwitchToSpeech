@@ -6,13 +6,16 @@ import concurrent.futures
 import json
 import re
 
+# TODO: Change this to your needs
+TWITCH_CHANNEL = ''
+AUDIO_DEVICE = ''
+
 FILENAME = 'speech.wav'
-TWITCH_CHANNEL = 'weiest_'
 MESSAGE_RATE = 0.5
 MAX_QUEUE_LENGTH = 20
 MAX_WORKERS = 100
 
-audio = AudioEngine("Speakers (Focusrite USB Audio)")
+audio = AudioEngine(AUDIO_DEVICE)
 voice = VoiceEngine()
 twitch = Twitch(TWITCH_CHANNEL)
 
