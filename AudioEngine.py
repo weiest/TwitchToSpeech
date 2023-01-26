@@ -1,11 +1,12 @@
+from pygame import mixer, _sdl2 as audiodevices
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
-from pygame import mixer, _sdl2 as audiodevices
+
 
 class AudioEngine:
     def __initMixer__(self, name) -> bool:
         try:
-            mixer.init(devicename = name)
+            mixer.init(devicename=name)
             self.initialized = True
             return True
         except:
@@ -44,9 +45,9 @@ class AudioEngine:
         if not self.initialized:
             print(f"[Audio] No Audio Device has been selected, quitting.")
             quit()
-        
+
     def playAudio(self, filename) -> bool:
-        try:    
+        try:
             channel = mixer.find_channel()
             channel.play(mixer.Sound(filename))
             return True
