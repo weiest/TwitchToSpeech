@@ -9,8 +9,8 @@ MESSAGE_RATE = 0.5
 MAX_QUEUE_LENGTH = 20
 MAX_WORKERS = 100
 
-audio = AudioEngine("Speakers (Focusrite USB Audio)");
-voice = VoiceEngine();
+audio = AudioEngine("Speakers (Focusrite USB Audio)")
+voice = VoiceEngine()
 twitch = Twitch(TWITCH_CHANNEL)
 
 last_time = time.time()
@@ -40,7 +40,7 @@ def handle_message(message):
 
 while True:
     active_tasks = [t for t in active_tasks if not t.done()]
-    new_messages = twitch.twitch_receive_messages();
+    new_messages = twitch.twitch_receive_messages()
     if new_messages:
         message_queue += new_messages; # New messages are added to the back of the queue
         message_queue = message_queue[-MAX_QUEUE_LENGTH:] # Shorten the queue to only the most recent X messages
