@@ -20,14 +20,16 @@ class Twitch:
         self.__twtich_connect__()
 
     def __twtich_connect__(self):
-        print('Connecting to Twitch...')
+        print('[Twitch] Connecting to Twitch...')
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.sock.connect(('irc.chat.twitch.tv', 6667))
 
-        user = 'justinfan%i' % random.randint(10000, 99999)
-        print('Connected to Twitch. Logging in anonymously...')
-        self.sock.send(('PASS asdf\r\nNICK %s\r\n' % user).encode())
+        USER = 'justinfan%i' % random.randint(10000, 99999)
+        PASSWORD = "asdf"
+        login = "PASS {}\r\nNICK {}\r\n"
+        print('[Twitch] Connected to Twitch. Logging in anonymously...')
+        self.sock.send(login.format(PASSWORD, USER).encode())
 
         self.sock.settimeout(1.0/60.0)
 
@@ -46,11 +48,11 @@ class Twitch:
             except socket.timeout:
                 break
             except Exception as e:
-                print('Unexpected connection error. Reconnecting in a second...', e)
+                print('[Twitch] Unexpected connection error. Reconnecting in a second...', e)
                 self.__reconnect__(1)
                 return []
             if not received:
-                print('Connection closed by Twitch. Reconnecting in 5 seconds...')
+                print('[Twitch] Connection closed by Twitch. Reconnecting in 5 seconds...')
                 self.__reconnect__(5)
                 return []
             buffer += received
@@ -78,7 +80,7 @@ class Twitch:
                     self.partial = buffer[end:]
 
                 if matches[0].start() != 0:
-                    print('either ddarknut fucked up or twitch is bonkers, or both I mean who really knows anything at this point')
+                    print('[Twitch] someone fucked up or twitch is bonkers, or both I mean who really knows anything at this point')
 
             return res
 
@@ -92,17 +94,18 @@ class Twitch:
                 privmsgs.append({
                     'username': irc_message['name'],
                     'message': irc_message['trailing'],
+                    'time':  time.strftime("%H:%M:%S"),
                 })
             elif cmd == 'PING':
                 self.sock.send(b'PONG :tmi.twitch.tv\r\n')
             elif cmd == '001':
-                print('Successfully logged in. Joining channel %s.' % self.channel)
+                print('[Twitch] Successfully logged in. Joining channel %s.' % self.channel)
                 self.sock.send(('JOIN #%s\r\n' % self.channel).encode())
                 self.login_ok = True
             elif cmd == 'JOIN':
-                print('Successfully joined channel %s' % irc_message['params'][0])
+                print('[Twitch] Successfully joined channel %s' % irc_message['params'][0])
             elif cmd == 'NOTICE':
-                print('Server notice:', irc_message['params'], irc_message['trailing'])
+                print('[Twitch] Server notice:', irc_message['params'], irc_message['trailing'])
             elif cmd == '002': continue
             elif cmd == '003': continue
             elif cmd == '004': continue
@@ -112,12 +115,12 @@ class Twitch:
             elif cmd == '353': continue
             elif cmd == '366': continue
             else:
-                print('Unhandled irc message:', irc_message)
+                print('[Twitch] Unhandled irc message:', irc_message)
 
         if not self.login_ok:
             # We are still waiting for the initial login message. If we've waited longer than we should, try to reconnect.
             if time.time() - self.login_timestamp > MAX_TIME_TO_WAIT_FOR_LOGIN:
-                print('No response from Twitch. Reconnecting...')
+                print('[Twitch] No response from Twitch. Reconnecting...')
                 self.reconnect(0)
                 return []
 

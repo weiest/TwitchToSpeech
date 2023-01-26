@@ -1,11 +1,10 @@
 from AudioEngine import AudioEngine
 from VoiceEngine import VoiceEngine
 from Twitch import Twitch
-import time, concurrent.futures
-from threading import current_thread
+import time, concurrent.futures, json, re
 
-FILENAME = "speech.wav"
 TWITCH_CHANNEL = 'weiest_'
+FILENAME = 'speech.wav'
 MESSAGE_RATE = 0.5
 MAX_QUEUE_LENGTH = 20
 MAX_WORKERS = 100
