@@ -1,10 +1,12 @@
-from pygame import mixer, _sdl2 as audiodevices
+import logging
+logger = logging.getLogger(__name__)
 from os import environ
+from typing import NoReturn
+from pygame import mixer, _sdl2 as audiodevices
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
-
 class AudioEngine:
-    def __initMixer__(self, name) -> bool:
+    def __initMixer__(self, name:str) -> bool:
         try:
             mixer.init(devicename=name)
             self.initialized = True
@@ -18,16 +20,16 @@ class AudioEngine:
         mixer.quit()
         return devices
 
-    def __init__(self, device=""):
+    def __init__(self, device:str=None) -> NoReturn:
         self.initialized = False
-        print(f"[Audio] Initializing Audio Interface")
-        if (device != ""):
+        logger.info(f"[Audio] Initializing Audio Interface")
+        if (device):
             if (self.__initMixer__(device)):
-                print(f"[Audio] Successfully Initialized using {device}")
+                logger.info(f"[Audio] Successfully Initialized using {device}")
                 return
             else:
-                print(f"[Audio] Failed to Initialize using {device}")
-        print(f"[Audio] Attempting to use Audio Devices from System")
+                logger.warning(f"[Audio] Failed to Initialize using {device}")
+        logger.info(f"[Audio] Attempting to use Audio Devices found from System with User Input required!")
         for device in self.__getListOfDevices__():
             attempt = ""
             while (attempt not in ["y", "n"]):
@@ -36,17 +38,17 @@ class AudioEngine:
             if (attempt == "n"):
                 continue
             if (self.__initMixer__(device)):
-                print(f"[Audio] Successfully Initialized using {device}")
+                logger.info(f"[Audio] Successfully Initialized using {device}")
                 break
             else:
-                print(f"[Audio] Failed to Initialize using {device}")
-                print(f"[Audio] Skipping..")
+                logger.warning(f"[Audio] Failed to Initialize using {device}")
+                logger.warning(f"[Audio] Skipping..")
                 continue
         if not self.initialized:
-            print(f"[Audio] No Audio Device has been selected, quitting.")
-            quit()
+            logger.error(f"[Audio] No Audio Device has been selected, quitting.")
+            raise RuntimeError("No Audio Device selected, unable to proceed")
 
-    def playAudio(self, filename) -> bool:
+    def playAudio(self, filename: str) -> bool:
         try:
             channel = mixer.find_channel()
             channel.play(mixer.Sound(filename))
