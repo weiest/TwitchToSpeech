@@ -1,6 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename='logger.log', level=logging.INFO)
+logging.basicConfig(level=logging.INFO)
+
 from typing import NoReturn
 from os import remove
 from AudioEngine import AudioEngine
