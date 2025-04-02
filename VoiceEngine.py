@@ -1,7 +1,6 @@
 import logging
 logger = logging.getLogger(__name__)
 import pyttsx3
-from typing import NoReturn
 from enum import Enum
 
 class Gender(Enum):
@@ -13,38 +12,41 @@ class Language(Enum):
     JAPANESE = 411
 
 class VoiceEngine:
-    def __init__(self) -> NoReturn:
-        self.engine = pyttsx3.Engine()
+    def __init__(self) -> None:
+        self.engine = pyttsx3.init() # pyttsx3.Engine()
         self.language = Language.ENGLISH
 
-    def setVoiceGender(self, gender: str) -> NoReturn:
+    def setVoiceGender(self, gender: str) -> None:
         gender = gender.upper()
         if gender in Gender.__members__:
             voices = self.engine.getProperty('voices')
-            self.engine.setProperty('voice', voices[Gender[gender].value].id)
+            self.voiceGender = Gender[gender]
+            self.engine.setProperty('voice', voices[self.voiceGender.value].id)
         else:
             logger.warning(f"{gender} is not a valid option")
-    def getVoiceGender(self) -> str:
-        return self.engine.getProperty("voice")
+    def getVoiceGenderName(self) -> str:
+        return self.voiceGender.name
+    def getVoiceGenderValue(self) -> str:
+        return self.voiceGender.value
 
-    def setVolume(self, volume: float) -> NoReturn:
+    def setVolume(self, volume: float) -> None:
         self.engine.setProperty("volume", volume)
     def getVolume(self) -> float:
         return self.engine.getProperty("volume")
 
-    def setRate(self, rate:float) -> NoReturn:
+    def setRate(self, rate:float) -> None:
         self.engine.setProperty("rate", rate)
     def getRate(self) -> float:
         return self.engine.getProperty("rate")
 
-    def setPitch(self, pitch:float) -> NoReturn:
+    def setPitch(self, pitch:int) -> None:
         self.pitch = pitch
-    def getPitch(self) -> float:
+    def getPitch(self) -> int:
         if hasattr(self, 'pitch'):
-            return self.pitch
+            return int(self.pitch)
         return None
-
-    def setLanguage(self, language: str) -> NoReturn:
+    
+    def setLanguage(self, language: str) -> None:
         language = language.upper()
         if language in Language.__members__:
             self.language = Language[language]
@@ -53,11 +55,30 @@ class VoiceEngine:
     def getLanguageName(self) -> str:
         return self.language.name
     def getLanguageValue(self) -> str:
-        return self.language.value
+        return self.language.value    
 
-    def generateSpeech(self, message: str, filename: str) -> NoReturn:
+    def getParameters(self) -> str:
+        return {
+            "language": self.getLanguageName(),
+            "gender": self.getVoiceGender(),
+            "pitch": self.getPitch(),
+            "rate": self.getRate(),
+            "volume": self.getVolume(),
+        }
+
+    def sayMessage(self, message:str) -> None:
+        self.engine.say(message)
+        self.engine.runAndWait()
+            
+    def generateSpeech(self, message: str, filename: str) -> None:
+        if not message:
+            return
         if self.getPitch():
             message = f"<pitch middle='{self.getPitch()}'>{message}</pitch>"
         message = f"<lang langid='{self.getLanguageValue()}'>{message}</lang>"
         self.engine.save_to_file(message, filename)
         self.engine.runAndWait()
+
+if __name__ == "__main__":
+    voice = VoiceEngine()
+    voice.sayMessage('The quick brown fox jumped over the lazy dog')

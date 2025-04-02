@@ -1,9 +1,9 @@
 import logging
 logger = logging.getLogger(__name__)
 from os import environ
-from typing import NoReturn
-from pygame import mixer, _sdl2 as audiodevices
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+from pygame import mixer, _sdl2 as audiodevices
+
 
 class AudioEngine:
     def __initMixer__(self, name:str) -> bool:
@@ -20,7 +20,7 @@ class AudioEngine:
         mixer.quit()
         return devices
 
-    def __init__(self, device:str=None) -> NoReturn:
+    def __init__(self, device:str=None) -> None:
         self.initialized = False
         logger.info(f"[Audio] Initializing Audio Interface")
         if (device):

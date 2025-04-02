@@ -1,8 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(filename='main.log',level=logging.INFO)
 
-from typing import NoReturn
 from os import remove
 from AudioEngine import AudioEngine
 from VoiceEngine import VoiceEngine
@@ -10,11 +9,14 @@ from VoiceEngine import VoiceEngine
 audio = AudioEngine("CABLE Input (VB-Audio Virtual Cable)")
 voice = VoiceEngine()
 voice.setVoiceGender("Female")
+voice.setPitch("1")
+voice.setRate("60")
 
-def command(message: str) -> NoReturn:
+def command(message: str) -> None:
     arguments = message.split(" ")
     actions = {
         "help": lambda _: print(list(actions.keys())),
+        "parameters": lambda _: print(voice.getParameters()),
         "language": lambda value: voice.setLanguage(value),
         "gender": lambda value: voice.setVoiceGender(value),
         "pitch":lambda value: voice.setPitch(float(value)),
